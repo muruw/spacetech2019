@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/muruw/spacetech2019#readme",
   "dependencies": {
-    "express": "^4.16.4"
+    "express": "^4.16.4",
+    "ws": "^7.0.0"
   }
 }
