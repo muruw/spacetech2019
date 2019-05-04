@@ -6,9 +6,6 @@ body {
 .ceo_sentence {
   color: snow;
   font-size: 30px;
-  position: absolute;
-  left: 41%;
-  top: 35%;
 }
 
 /*Vertical Flip*/
@@ -198,7 +195,6 @@ body {
   margin-left: auto;
   margin-right: auto;
 
-  position: relative;
   background-color: #39ac39;
   color: black;
 
@@ -218,8 +214,12 @@ body {
 
 html,
 body {
-  padding: 0;
-  margin: 0;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  position: absolute;
+  overflow: hidden;
 }
 
 html {
@@ -227,41 +227,29 @@ html {
   min-height: 100%;
 }
 
-#main {
-  height: 1000px;
-  width: 100%;
-  position: fixed;
-}
-
-#main:after {
-  content: "";
-  display: block;
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
+.flex_container {
   height: 100%;
-  opacity: 0.2;
-  z-index: -1;
-}
+  padding: 0;
+  margin: 0;
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  align-items: center;
 
-#gradientOn {
-  position: absolute;
-  opacity: 0.7;
-  height: 100%;
-  width: 100%;
-  background: linear-gradient(blue, 10%, purple);
+  flex-direction: column;
+}
+.flex_container > div {
+  text-align: center;
 }
 
 #ourSlogan {
   color: snow;
-  text-align: center;
-  font-size: 90px;
-  display: block;
-  margin: 190px auto;
-  width: 45%;
-  position: absolute;
-  left: 15%;
+  font-size: 70px;
+  width: 40%;
+  margin: 50px 0;
+  position: relative;
 }
 
 #ourSlogan p {
@@ -270,17 +258,16 @@ html {
 }
 
 .example_a {
-  color: rgb(22, 21, 21) !important;
+  color: rgb(22, 21, 21);
   text-transform: uppercase;
   background: snow;
   padding: 30px 50px;
   border-radius: 50px;
-  display: inline-block;
+
   border: none;
   font-family: "Arial";
   font-size: 30px;
   text-decoration: none;
-  margin-top: 400px;
 }
 
 .example_a:hover {
@@ -290,28 +277,14 @@ html {
   -moz-box-shadow: 0px 5px 40px -10px rgba(0, 0, 0, 0.57);
   box-shadow: 5px 40px -10px rgba(0, 0, 0, 0.57);
   transition: all 0.4s ease 0s;
-  color: white !important;
+  color: white;
 }
 
 .button_cont {
-  position: inherit;
   font-weight: bold;
   font-family: "Raleway";
-}
-
-p {
-  margin-top: 200px;
-}
-
-.centered {
-  position: sticky; /* or absolute */
-  left: 50%;
-}
-
-#logoSection {
-  margin-top: 50px;
-  position: absolute;
-  margin-left: 23%;
+  display: inherit;
+  margin: 50px 0;
 }
 
 img {
