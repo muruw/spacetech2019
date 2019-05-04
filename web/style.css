@@ -3,11 +3,6 @@ body {
   font-family: "Open Sans";
 }
 
-.ceo_sentence {
-  color: snow;
-  font-size: 30px;
-}
-
 /*Vertical Flip*/
 .verticalFlip {
   display: inline;
@@ -126,62 +121,6 @@ body {
   }
 }
 
-/* ------- */
-/* TOOLBAR */
-/* ------- */
-
-.toolbar {
-  position: fixed;
-  width: 100%;
-  top: 0%;
-  left: 0%;
-  background: darkblue;
-  height: 56px;
-  z-index: -5;
-}
-
-.toolbar_logo {
-  margin-left: 1rem;
-}
-
-.toolbar_navigation {
-  display: flex;
-  height: 100%;
-  align-items: center;
-  padding: 0 1rem;
-}
-
-.spacer {
-  flex: 1;
-}
-
-.toolbar_logo a {
-  color: white;
-  text-decoration: none;
-  font-size: 1.5rem;
-}
-
-.toolbar_navigation_items ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-}
-
-.toolbar_navigation_items li {
-  padding: 0 0.5rem;
-}
-
-.toolbar_navigation_items a {
-  color: white;
-  text-decoration: none;
-}
-
-.toolbar_navigation_items a:hover,
-.toolbar_navigation_items a:active {
-  color: orange;
-}
-
 .rm_nextstep_button {
   font-size: 40px;
   border-radius: 5px;
@@ -244,34 +183,35 @@ html {
   text-align: center;
 }
 
-#ourSlogan {
+.ceo_sentence {
   color: snow;
-  font-size: 70px;
-  width: 40%;
-  margin: 50px 0;
-  position: relative;
+  font-size: 15px;
 }
 
-#ourSlogan p {
-  font-family: "Raleway", sans-serif;
-  color: snow;
+.ourSlogan {
+  max-width: 55%;
+  max-height: 55%;
+}
+
+.ourSlogan > img {
+  width: 100%;
 }
 
 .example_a {
   color: rgb(22, 21, 21);
   text-transform: uppercase;
   background: snow;
-  padding: 30px 50px;
+  padding: 15px 30px;
   border-radius: 50px;
 
   border: none;
   font-family: "Arial";
-  font-size: 30px;
+  font-size: 15px;
   text-decoration: none;
 }
 
 .example_a:hover {
-  background: yellowgreen;
+  background: rgb(55, 133, 221);
   letter-spacing: 1px;
   -webkit-box-shadow: 0px 5px 40px -10px rgba(0, 0, 0, 0.57);
   -moz-box-shadow: 0px 5px 40px -10px rgba(0, 0, 0, 0.57);
@@ -284,11 +224,7 @@ html {
   font-weight: bold;
   font-family: "Raleway";
   display: inherit;
-  margin: 50px 0;
-}
-
-img {
-  padding-right: 80px;
+  margin: 20px 0;
 }
 
 /* ASTRONAUT */
