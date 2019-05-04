@@ -6,3 +6,38 @@ body {
 *, *:before, *:after {
     box-sizing: border-box;
 }
+
+.underbar {
+    width: 100%;
+    height: 8vh;
+    background-color: rgb(55, 133, 221);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+
+.filler-button {
+    width: 20%;
+    height: 55%;
+    margin-right: 3%;
+    margin-left: 3%;
+    font-weight: bold;
+    color: white;
+    text-transform: uppercase;
+    border: 3px solid white;
+    background: rgb(55, 133, 221);
+    border-radius: 50px;
+    font-family: "Arial";
+    font-size: 20px;
+    text-align: center;
+    text-decoration: none
+}
+
+.filler-button:hover {
+    background: snow;
+    letter-spacing: 1px;
+    transition: all 0.4s ease 0s;
+    color: rgb(22, 21, 21);
+    border: none;
+}
