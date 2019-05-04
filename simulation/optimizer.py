@@ -33,17 +33,21 @@ class MastPositionOptimizer:
         coverage = 0
         size = self.density_map.shape
 
-        for x in np.linspace(0, 1, size[0]) + 1/size[0]/2:
-            for y in np.linspace(0, 1, size[1]) + 1/size[1]/2:
+        for x in np.linspace(0, 1, size[0], False) + 1/size[0]/2:
+            for y in np.linspace(0, 1, size[1], False) + 1/size[1]/2:
                 for m, m_range in enumerate(self.mast_ranges):
-                    #a = get_absorption_between_points(
-                    #    (p[m*2], p[m*2+1]),
-                    #    (x, y)
-                    #)
-                    d = np.sqrt((p[m*2] - x)**2 + (p[m*2+1] - y)**2)
-                    P_r = np.exp(-d/m_range)
+                    a = get_absorption_between_points((
+                        min(0, max(size[0] - 1, int(p[m*2]*size[0]))),
+                        min(0, max(size[1] - 1, int(p[m*2+1]*size[1])))
+                    ), (
+                        int(x*size[0]),
+                        int(y*size[1])
+                    ), self.density_map)
 
-                    if P_r > 0.36787944117:
+                    d = np.sqrt((p[m*2] - x)**2 + (p[m*2+1] - y)**2)
+                    P_r = np.exp(-d/m_range) * 1/max(a, 1)
+
+                    if P_r > 0.1:
                         coverage += 1
                         break
 
@@ -81,14 +85,15 @@ class MastPositionOptimizer:
                 verbose=verbose,
                 halloffame=hof)
             
-            p = list(hof[0])
-            
-            print("[" + ", ".join([
-                "{ \"x\": %f, \"y\": %f, \"type\": \"%s\" }" % (
-                    p[m*2],
-                    p[m*2+1],
-                    "mm-wave"
-                ) for m, m_range in enumerate(self.mast_ranges)
-            ]) + "]", flush=True)
+            if not verbose:
+                p = list(hof[0])
+                
+                print("[" + ", ".join([
+                    "{ \"x\": %f, \"y\": %f, \"type\": \"%s\" }" % (
+                        p[m*2],
+                        p[m*2+1],
+                        "mm-wave"
+                    ) for m, m_range in enumerate(self.mast_ranges)
+                ]) + "]", flush=True)
 
         return pop, stats, hof
