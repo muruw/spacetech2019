@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 from bresenham import bresenham
 
 #%%
-def get_density_map(bbox, min_building_height=2, size=(128, 128)):
+def get_density_map(bbox, min_building_height=2, size=(64, 64)):
     url = "https://xgis.maaamet.ee/xgis2/service/32g9/mit?service=WMS&request=GetMap&layers=nDSM&styles=&format=image%2Fpng&transparent=true&version=1.1.1&width=1024&height=1024&srs=EPSG%3A3301&bbox=" + bbox
     response = requests.get(url)
     original = np.array(Image.open(BytesIO(response.content)))
