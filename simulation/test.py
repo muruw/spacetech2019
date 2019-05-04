@@ -6,7 +6,7 @@ from simulation.optimizer import MastPositionOptimizer
 from simulation.wms import get_density_map
 
 #%%
-mast_ranges = np.random.uniform(0.05, 0.25, 10)
+mast_ranges = np.random.uniform(0.05, 0.25, 3)
 density_map = get_density_map("657000,6472000,661000,6476000", 2, (64, 64))
 
 plt.imshow(density_map)

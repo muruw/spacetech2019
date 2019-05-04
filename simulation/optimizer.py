@@ -64,8 +64,21 @@ class MastPositionOptimizer:
         stats.register("min", np.min)
         stats.register("max", np.max)
 
-        algorithms.eaSimple(pop,
-            self.toolbox, cxpb=0.5, mutpb=0.2, ngen=ngen, stats=stats,
-            halloffame=hof)
+        for i in range(ngen):
+            algorithms.eaSimple(pop,
+                self.toolbox,
+                cxpb=0.5, mutpb=0.2, ngen=1,
+                #stats=stats,
+                verbose=False,
+                halloffame=hof)
+            
+            p = list(hof[0])
+            
+            print("[" + ", ".join([
+                "{ \"x\": %f, \"y\": %f }" % (
+                    p[m*2],
+                    p[m*2+1]
+                ) for m, m_range in enumerate(self.mast_ranges)
+            ]) + "]")
 
         return pop, stats, hof
