@@ -74,38 +74,22 @@
         },
         edit: {
             featureGroup: editableLayers,
-            edit: false
+            edit: false,
+            remove: false
         }
     };
 
     var drawControl = new L.Control.Draw(drawPluginOptions);
     map.addControl(drawControl);
 
-    var editableLayers = new L.FeatureGroup();
-    map.addLayer(editableLayers);
-
-    map.on('draw:created', function(e) {
-        var type = e.layerType,
-            layer = e.layer;
+    map.on('draw:created', function (e) {
+        var layer = e.layer;
 
         editableLayers.addLayer(layer);
 
-        if (type === 'rectangle') {
-            layer.on('click', function() {
-                alert(layer.getLatLngs());
-            });
-        }
-    });
-
-    map.on('draw:deleted', function(e) {
-        var type = e.layerType,
-            layer = e.layer;
-
-        if (type === 'rectangle') {
-            layer.on('click', function () {
-                editableLayers.remove(layer);
-            });
-        }
+        layer.on('click', function () {
+            console.log(layer.getLatLngs());
+        });
     });
 
 </script>

@@ -634,6 +634,6 @@
     border-right-color: #fff;
 }
 
-.leaflet-draw-toolbar .leaflet-draw-draw-rectangle {
+.leaflet-draw-draw-rectangle {
     background-image: url("images/black.png");
 }
