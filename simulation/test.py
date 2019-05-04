@@ -28,6 +28,8 @@ def plot_coverage(density_map, mast_ranges, p):
                     break
 
     plt.title(str(coverage.sum()))
-    plt.imshow(coverage)
+    img = plt.imshow(density_map, zorder = 2, alpha=0.6)
+    img2 = plt.imshow(coverage, zorder = 1)
+    plt.plot()
 
 plot_coverage(density_map, mast_ranges, list(hof[0]))
