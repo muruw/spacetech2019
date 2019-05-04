@@ -3,6 +3,14 @@ body {
   font-family: "Open Sans";
 }
 
+.ceo_sentence {
+  color: snow;
+  font-size: 30px;
+  position: absolute;
+  left: 55%;
+  top: 95%;
+}
+
 /*Vertical Flip*/
 .verticalFlip {
   display: inline;
@@ -12,7 +20,7 @@ body {
   animation: vertical 12.5s linear infinite 0s;
   -ms-animation: vertical 12.5s linear infinite 0s;
   -webkit-animation: vertical 12.5s linear infinite 0s;
-  color: snow;
+  color: yellowgreen;
   opacity: 0;
   overflow: hidden;
   position: absolute;
@@ -178,15 +186,15 @@ body {
 }
 
 .rm_nextstep_button {
-  font-size: 32px;
-  border-radius: 10px;
+  font-size: 40px;
+  border-radius: 5px;
   font-family: "Open Sans";
   border: black solid 5px;
 
-  padding-top: 10px;
-  padding-bottom: 10px;
+  padding-top: 7px;
+  padding-bottom: 7px;
 
-  width: 300px;
+  width: 200px;
   margin-left: auto;
   margin-right: auto;
 
@@ -196,6 +204,10 @@ body {
 
   -webkit-transition-duration: 0.4s; /*Safari*/
   transition-duration: 0.4s;
+
+  -webkit-box-shadow: 0 7px 4px black;
+  -moz-box-shadow: 0 7px 4px black;
+  box-shadow: 0 9px 4px black;
 }
 @import url("https://fonts.googleapis.com/css?family=Open+Sans");
 
@@ -242,11 +254,12 @@ html {
 }
 
 #ourSlogan {
+  color: snow;
   text-align: center;
   font-size: 90px;
   display: block;
-  margin: 200px auto;
-  width: 55%;
+  margin: 190px auto;
+  width: 45%;
   position: absolute;
   left: 15%;
 }
@@ -257,11 +270,10 @@ html {
 }
 
 .example_a {
-  margin-top: 200px;
-  color: rgb(32, 27, 27) !important;
+  color: rgb(22, 21, 21) !important;
   text-transform: uppercase;
   background: snow;
-  padding: 70px;
+  padding: 30px 50px;
   border-radius: 50px;
   display: inline-block;
   border: none;
