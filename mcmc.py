@@ -5,6 +5,7 @@ from io import BytesIO
 import numpy as np
 import matplotlib.pyplot as plt
 from random import randint, random
+from bresenham import bresenham
 
 #%%
 url = 'https://xgis.maaamet.ee/xgis2/service/32g9/mit?service=WMS&request=GetMap&layers=nDSM&styles=&format=image%2Fpng&transparent=true&version=1.1.1&width=1024&height=1024&srs=EPSG%3A3301&bbox=657000,6472000,661000,6476000'
@@ -36,10 +37,24 @@ def get_density_map(original, min_building_height=2, size=(128, 128)):
     return smoothed
 
 #%%
-for i in range(10):
-    plt.figure(i)
-    plt.imshow(get_density_map(original, i))
+def plot_absorption_between_points(p1, p2, initial):
+    density = 0
+    img = np.zeros(initial.shape)
+    
+    pixels = bresenham(p1[0], p1[1], p2[0], p2[1])
+    for p in pixels:
+        img[p[0],p[1]] = initial[p[0], p[1]]
+        density += initial[p[0], p[1]]
+    plt.imshow(img)
 
+def get_absorption_between_points(p1, p2, initial):
+    pixels = np.array(list(bresenham(p1[0], p1[1], p2[0], p2[1])))
+    return initial[pixels[:,0], pixels[:,1]].sum()
+
+
+d = get_density_map(original, 2, (128, 128))
+
+get_absorption_between_points([50,0], [50, 100], d)
 #%%
 plt.imshow(get_density_map(original, 2, (128, 128)))
 
@@ -147,8 +162,9 @@ def get_mutation_probability(density_map, X, Y, n):
 
     X_t = 1 / (np.log(n) + 1)
     Y_t = 1 / (np.log(n + 1) + 1)
+  
 
-    return np.exp(Y_f - X_f)
+    return Y_f, X_f
 
     #return min(1, np.exp(
     #    (Y_f - X_f) * (1/Y_t - 1/X_t)
@@ -170,11 +186,15 @@ p_values = []
 #get_fitness(density_map, X)
 #get_fitness(density_map, X), get_fitness(density_map, mutate(density_map, X))
 #exp[(coldFit - hotFit)*(1/coldTemp - 1/hotTemp)]
-
-for i in range(100):
+yf = []
+xf = []
+for i in range(1000):
     Y = mutate(density_map, X)
-    p = get_mutation_probability(density_map, X, Y, n)
-    p_values.append(p)
+    y, x = get_mutation_probability(density_map, X, Y, n)
+    yf.append(y)
+    xf.append(x)
+    p = np.exp(x-y)
+    p_values.append(np.exp(x-y))
 
     if random() < p:
         X = Y
@@ -187,6 +207,8 @@ X, n
 #%%
 plt.plot(p_values)
 
+#%%
+plt.plot(np.exp(np.array(xf)-np.array(yf)))
 #%%
 plot_coverage(density_map, X)
 
