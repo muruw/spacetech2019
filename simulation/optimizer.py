@@ -7,6 +7,8 @@ from deap import base
 from deap import creator
 from deap import tools
 
+from simulation.wms import get_absorption_between_points
+
 
 class MastPositionOptimizer:
     def __init__(self, density_map, mast_ranges):
@@ -31,10 +33,17 @@ class MastPositionOptimizer:
         coverage = 0
         size = self.density_map.shape
 
-        for x in range(size[0]):
-            for y in range(size[1]):
+        for x in np.linspace(0, 1, size[0]) + 1/size[0]/2:
+            for y in np.linspace(0, 1, size[1]) + 1/size[1]/2:
                 for m, m_range in enumerate(self.mast_ranges):
-                    if (p[m*2] - x/size[0])**2 + (p[m*2+1] - y/size[1])**2 < m_range**2:
+                    #a = get_absorption_between_points(
+                    #    (p[m*2], p[m*2+1]),
+                    #    (x, y)
+                    #)
+                    d = np.sqrt((p[m*2] - x)**2 + (p[m*2+1] - y)**2)
+                    P_r = np.exp(-d/m_range)
+
+                    if P_r > 0.36787944117:
                         coverage += 1
                         break
 
@@ -54,7 +63,7 @@ class MastPositionOptimizer:
 
         return ind1, ind2
 
-    def run(self, npop=300, ngen=20):
+    def run(self, npop=300, ngen=20, verbose=False):
         pop = self.toolbox.population(n=npop)
         hof = tools.HallOfFame(1, similar=np.array_equal)
         
@@ -68,8 +77,8 @@ class MastPositionOptimizer:
             algorithms.eaSimple(pop,
                 self.toolbox,
                 cxpb=0.5, mutpb=0.2, ngen=1,
-                #stats=stats,
-                verbose=False,
+                stats=stats,
+                verbose=verbose,
                 halloffame=hof)
             
             p = list(hof[0])

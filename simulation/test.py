@@ -13,7 +13,7 @@ plt.imshow(density_map)
 
 #%%
 optimizer = MastPositionOptimizer(density_map, mast_ranges)
-pop, stats, hof = optimizer.run(100, 10)
+pop, stats, hof = optimizer.run(100, 10, True)
 
 #%%
 def plot_coverage(density_map, mast_ranges, p):
