@@ -10,13 +10,13 @@ from simulation.wms import get_density_map
 bbox = sys.argv[1]
 density_map = get_density_map(bbox)
 
-bbox = [int(coord) for coord in bbox.split(",")]
+bbox = [float(coord) for coord in bbox.split(",")]
 width = bbox[2] - bbox[0]
 height = bbox[3] - bbox[1]
 size = (width + height) / 2000
 
-mm_wave_masts = min(1, max(5, round(size**2 / np.pi)))
-small_cell_masts = max(20, round(size**2 * (1 - 1 / np.pi / 2)))
+mm_wave_masts = max(1, min(5, round(size**2 / np.pi)))
+small_cell_masts = min(20, round(size**2 * (1 - 1 / np.pi / 2)))
 
 optimizer = MastPositionOptimizer(
     density_map,
