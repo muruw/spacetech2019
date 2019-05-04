@@ -103,6 +103,26 @@
           console.log(bbox);
         });
       });
+
+      fetch('/get-positions?bbox=657000,6472000,661000,6476000')
+              .then(function(response) {
+                return response.json();
+              })
+              .then(function(result) {
+                console.log(result);
+
+                if (Array.isArray(result) && result.length > 0) {
+                  result.forEach((position) => {
+                    console.log('position', position);
+
+                    var wgs84Coordinates = proj4(projection, proj4.WGS84, [position.x, position.y]);
+
+                    console.log('wgs84Coordinates', wgs84Coordinates);
+
+                    L.marker([wgs84Coordinates[1], wgs84Coordinates[0]]).addTo(map);
+                  });
+                }
+              });
     </script>
   </body>
 </html>
