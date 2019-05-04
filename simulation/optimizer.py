@@ -75,10 +75,11 @@ class MastPositionOptimizer:
             p = list(hof[0])
             
             print("[" + ", ".join([
-                "{ \"x\": %f, \"y\": %f }" % (
+                "{ \"x\": %f, \"y\": %f, \"type\": \"%s\" }" % (
                     p[m*2],
-                    p[m*2+1]
+                    p[m*2+1],
+                    "mm-wave"
                 ) for m, m_range in enumerate(self.mast_ranges)
-            ]) + "]")
+            ]) + "]", flush=True)
 
         return pop, stats, hof
