@@ -96,10 +96,10 @@
 
           console.log(lng1, lat1, lng2, lat2);
 
-          var estonianCoordinates1 = proj4(projection, [lng1, lat1]);
-          var estonianCoordinates2 = proj4(projection, [lng2, lat2]);
+          var estonianCoordinates1 = proj4(projection, [lat1, lng1]);
+          var estonianCoordinates2 = proj4(projection, [lat2, lng2]);
           console.log(estonianCoordinates1, estonianCoordinates2);
-          var bbox = estonianCoordinates1 + ", " + estonianCoordinates2;
+          var bbox = estonianCoordinates1 + "," + estonianCoordinates2;
           console.log(bbox);
         });
       });
