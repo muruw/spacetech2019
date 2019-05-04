@@ -7,10 +7,14 @@ import matplotlib.pyplot as plt
 from bresenham import bresenham
 
 #%%
-def get_density_map(bbox, min_building_height=2, size=(64, 64)):
+def get_height_map(bbox):
     url = "https://xgis.maaamet.ee/xgis2/service/32g9/mit?service=WMS&request=GetMap&layers=nDSM&styles=&format=image%2Fpng&transparent=true&version=1.1.1&width=1024&height=1024&srs=EPSG%3A3301&bbox=" + bbox
     response = requests.get(url)
-    original = np.array(Image.open(BytesIO(response.content)))
+    return np.array(Image.open(BytesIO(response.content)))
+
+
+def get_density_map(bbox, min_building_height=2, size=(64, 64)):
+    original = get_height_map(bbox)
 
     img = np.zeros(original.shape)
     mask = original > min_building_height
@@ -38,6 +42,10 @@ def plot_absorption_between_points(p1, p2, initial):
         img[p[0],p[1]] = initial[p[0], p[1]]
     plt.imshow(img)
 
-def get_absorption_between_points(p1, p2, initial):
+
+def get_absorption_between_points(p1, p2, d):
     pixels = np.array(list(bresenham(p1[0], p1[1], p2[0], p2[1])))
-    return initial[pixels[:,0], pixels[:,1]].sum()
+    a = d[pixels[:,0], pixels[:,1]].sum() * 3.15 / 20
+    dx = (1 / d.shape[0] + 1 / d.shape[1]) / 2
+
+    return np.exp(-a*dx)

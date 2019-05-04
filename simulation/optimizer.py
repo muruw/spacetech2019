@@ -9,14 +9,14 @@ from deap import tools
 
 from simulation.wms import get_absorption_between_points
 
+creator.create("FitnessMax", base.Fitness, weights=(1.0,))
+creator.create("Individual", np.ndarray, fitness=creator.FitnessMax)
+
 
 class MastPositionOptimizer:
     def __init__(self, density_map, mast_ranges):
         self.density_map = density_map
         self.mast_ranges = mast_ranges
-
-        creator.create("FitnessMax", base.Fitness, weights=(1.0,))
-        creator.create("Individual", np.ndarray, fitness=creator.FitnessMax)
 
         self.toolbox = base.Toolbox()
 
@@ -45,10 +45,13 @@ class MastPositionOptimizer:
                     ), self.density_map)
 
                     d = np.sqrt((p[m*2] - x)**2 + (p[m*2+1] - y)**2)
-                    P_r = np.exp(-d/m_range) * 1/max(a, 1)
+                    P_r = np.exp(-d/m_range) * a
 
-                    if P_r > 0.1:
-                        coverage += 1
+                    if P_r > 0.36:
+                        coverage += 1 + self.density_map[
+                            int(x*size[0]),
+                            int(y*size[1])
+                        ]
                         break
 
         return coverage,
@@ -92,8 +95,14 @@ class MastPositionOptimizer:
                     "{ \"x\": %f, \"y\": %f, \"type\": \"%s\" }" % (
                         p[m*2],
                         p[m*2+1],
-                        "mm-wave"
+                        self.get_mast_type(m)
                     ) for m, m_range in enumerate(self.mast_ranges)
                 ]) + "]", flush=True)
 
         return pop, stats, hof
+    
+    def get_mast_type(self, m):
+        if self.mast_ranges[m] > 0.2:
+            return "mm-wave"
+        
+        return "small-cell"
