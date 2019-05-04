@@ -4,6 +4,7 @@ import requests
 from io import BytesIO
 import numpy as np
 import matplotlib.pyplot as plt
+from bresenham import bresenham
 
 #%%
 def get_density_map(bbox, min_building_height=2, size=(128, 128)):
@@ -28,3 +29,15 @@ def get_density_map(bbox, min_building_height=2, size=(128, 128)):
     density = total / dx / dy
 
     return density
+
+
+def plot_absorption_between_points(p1, p2, initial):
+    img = np.zeros(initial.shape)
+    pixels = bresenham(p1[0], p1[1], p2[0], p2[1])
+    for p in pixels:
+        img[p[0],p[1]] = initial[p[0], p[1]]
+    plt.imshow(img)
+
+def get_absorption_between_points(p1, p2, initial):
+    pixels = np.array(list(bresenham(p1[0], p1[1], p2[0], p2[1])))
+    return initial[pixels[:,0], pixels[:,1]].sum()
