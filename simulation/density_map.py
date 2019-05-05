@@ -20,6 +20,7 @@ class DensityMap:
             self.corners[2] - self.corners[0],
             self.corners[3] - self.corners[1]
         ))
+        self.area = self.size[0] * self.size[1]
 
         # Get obstacle mask
         img = np.zeros(self.original.shape)
@@ -96,8 +97,8 @@ class DensityMap:
         g = self.get_grid_coords(p)
         return self.density[g[0], g[1]]
     
-    # Plot coverage results with given mast positions
-    def plot_coverage(self, mast_ranges, p, figure=0):
+    # Get signal strength in grid points
+    def get_coverage(self, mast_ranges, p):
         coverage = np.zeros(self.density.shape)
         size = self.density.shape
 
@@ -113,6 +114,19 @@ class DensityMap:
                     ))
                 
                 coverage[int(x*size[0]), int(y*size[1])] = max(P_r)
+        
+        return coverage
+    
+    # Get covered area
+    def get_coverage_area(self, mast_ranges, p):
+        coverage = self.get_coverage(mast_ranges, p)
+        grid_coverage = (coverage > MIN_RECEIVED_INTENSITY).sum()
+
+        return grid_coverage / self.density.shape[0] / self.density.shape[1] * self.area
+    
+    # Plot coverage results with given mast positions
+    def plot_coverage(self, mast_ranges, p, figure=0):
+        coverage = self.get_coverage(mast_ranges, p)
 
         plt.title(str(coverage.sum()))
 
@@ -127,14 +141,27 @@ class DensityMap:
 
         plt.plot()
     
-    # Suggest number of mm-wave and small-cells for area size
+    # Get mean density
+    def get_mean_density(self):
+        return np.mean(self.density)
+    
+    # Suggest number of masts for area size
+    def get_suggested_mast_amount(self, mast_range, area):
+        #area = self.size[0] * self.size[1]
+        d_coeff = 1 + N_DENSITY_COEFFICIENT * self.get_mean_density()
+        n = ceil(area / (np.pi * mast_range**2) * d_coeff)
+
+        #n_mm_wave = ceil(area / (np.pi * MM_WAVE_RANGE**2) * d_coeff)
+        #n_small_cell = ceil(
+        #    (area - (n_mm_wave/d_coeff - 1) * np.pi * MM_WAVE_RANGE**2) /
+        #    (np.pi * SMALL_CELL_RANGE**2)
+        #)
+
+        return min(n, MAX_MASTS)
+
+    # Get suggested mast ranges
     def get_suggested_mast_ranges(self):
-        area = self.size[0] * self.size[1]
-        n_mm_wave = ceil(area / (np.pi * MM_WAVE_RANGE**2) * 1.25)
-        n_small_cell = ceil(
-            (area - (n_mm_wave/1.25 - 1) * np.pi * MM_WAVE_RANGE**2) /
-            (np.pi * SMALL_CELL_RANGE**2)
-        )
+        n_mm_wave, n_small_cell = self.get_suggested_mast_amounts()
 
         return [MM_WAVE_RANGE] * n_mm_wave + [SMALL_CELL_RANGE] * n_small_cell
 

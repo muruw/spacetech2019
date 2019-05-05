@@ -14,14 +14,20 @@ creator.create("Individual", np.ndarray, fitness=creator.FitnessMax)
 
 
 class MastPositionOptimizer:
-    def __init__(self, density_map, mast_ranges):
+    def __init__(self, density_map, mast_ranges, fixed_p=[]):
         self.density_map = density_map
         self.mast_ranges = mast_ranges
+        self.fixed_p = fixed_p
 
         self.toolbox = base.Toolbox()
 
         self.toolbox.register("attr_pos", random.random)
-        self.toolbox.register("individual", tools.initRepeat, creator.Individual, self.toolbox.attr_pos, n=len(mast_ranges) * 2)
+        self.toolbox.register("individual",
+            tools.initRepeat,
+            creator.Individual,
+            self.toolbox.attr_pos,
+            n=len(mast_ranges) * 2 - len(fixed_p)
+        )
         self.toolbox.register("population", tools.initRepeat, list, self.toolbox.individual)
         
         self.toolbox.register("evaluate", self.evaluate)
@@ -32,6 +38,7 @@ class MastPositionOptimizer:
     def evaluate(self, p):
         coverage = 0
         size = self.density_map.density.shape
+        p = np.concatenate((self.fixed_p, p))
 
         for x in np.linspace(0, 1, size[0], False) + 1/size[0]/2:
             for y in np.linspace(0, 1, size[1], False) + 1/size[1]/2:
@@ -89,7 +96,7 @@ class MastPositionOptimizer:
                     halloffame=hof)
                 
                 if not verbose:
-                    p = list(hof[0])
+                    p = self.fixed_p + list(hof[0])
                     
                     print("[" + ", ".join([
                         "{ \"x\": %f, \"y\": %f, \"type\": \"%s\" }" % (
