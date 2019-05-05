@@ -1,6 +1,7 @@
 body {
     margin: 0;
     padding: 0;
+    overflow: hidden;
 }
 
 *, *:before, *:after {
@@ -28,13 +29,15 @@ body {
     border: 3px solid white;
     background: rgb(3, 62, 255);
     border-radius: 50px;
-    font-family: "Arial";
+    font-family: "Arial", sans-serif;
     font-size: 125%;
     text-align: center;
     text-decoration: none;
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
+    transition: all 0.2s ease 0s;
+    cursor: pointer;
 }
 
 .filler-button:hover {
@@ -42,5 +45,38 @@ body {
     letter-spacing: 1px;
     transition: all 0.4s ease 0s;
     color: rgb(22, 21, 21);
-    border: none;
+}
+
+.antenna-icon-big svg {
+    transform: scale(0.8);
+}
+
+.antenna-icon-small svg {
+    transform: scale(0.5);
+}
+
+#density {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 999;
+    height: 128px;
+}
+
+#coverage {
+    position: absolute;
+    top: 168px;
+    right: 20px;
+    z-index: 999;
+    height: 128px;
+}
+
+#density,
+#coverage {
+    display: none;
+}
+
+#density.active,
+#coverage.active {
+    display: block;
 }

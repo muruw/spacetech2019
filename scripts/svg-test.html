@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SVG</title>
+</head>
+<body style="background: green">
+
+<script>
+    function describeArc(x, y, radius, spread, startAngle, endAngle){
+        var innerStart = polarToCartesian(x, y, radius, endAngle);
+        var innerEnd = polarToCartesian(x, y, radius, startAngle);
+        var outerStart = polarToCartesian(x, y, radius + spread, endAngle);
+        var outerEnd = polarToCartesian(x, y, radius + spread, startAngle);
+
+        var largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
+
+        var d = [
+            "M", outerStart.x, outerStart.y,
+            "A", radius + spread, radius + spread, 0, largeArcFlag, 0, outerEnd.x, outerEnd.y
+        ].join(" ");
+
+        return d;
+    }
+
+    function polarToCartesian(centerX, centerY, radius, angleInDegrees) {
+        var angleInRadians = (angleInDegrees-90) * Math.PI / 180.0;
+
+        return {
+            x: centerX + (radius * Math.cos(angleInRadians)),
+            y: centerY + (radius * Math.sin(angleInRadians))
+        };
+    }
+
+    function getArc(x, y, radius, spread, startAngle, endAngle, color, width) {
+        return `<path stroke-linecap="round" fill="none" stroke="${color}" stroke-width="${width}" d="${describeArc(x, y, radius, spread, startAngle, endAngle)}"/>`;
+    }
+
+    console.log(describeArc(50, 50, 20, 2, 45, 135));
+
+    var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute('width', '100');
+    svg.setAttribute('height', '100');
+    svg.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:xlink", "http://www.w3.org/1999/xlink");
+
+    svg.innerHTML = `
+        <circle fill="white" cx="50" cy="50" r="10"/>
+        <circle fill="black" cx="50" cy="50" r="8"/>
+        ${getArc(50, 50, 20, 5, 45, 135, 'black', 8)}
+        ${getArc(50, 50, 20, 5, 45, 135, '#267fca', 5)}
+        ${getArc(50, 50, 40, 5, 45, 135, 'black', 8)}
+        ${getArc(50, 50, 40, 5, 45, 135, '#267fca', 5)}
+        ${getArc(50, 50, 20, 5, 225, 315, 'white', 8)}
+        ${getArc(50, 50, 20, 5, 225, 315, '#267fca', 5)}
+        ${getArc(50, 50, 40, 5, 225, 315, 'white', 8)}
+        ${getArc(50, 50, 40, 5, 225, 315, '#267fca', 5)}
+    `;
+
+    document.body.appendChild(svg);
+</script>
+</body>
+</html>

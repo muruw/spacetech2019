@@ -28,25 +28,34 @@
 
         map.setView([58.378, 26.729], 9);
 
+        function getAntennaIcon(isBig) {
+            return L.divIcon({
+                className: isBig ? 'antenna-icon-big' : 'antenna-icon-small',
+                html: getAntennaIconSVG(),
+                iconAnchor: [50, 50],
+                iconSize: [100, 100]
+            });
+        }
+
         L.tileLayer.wms('https://xgis.maaamet.ee/xgis2/service/32g9/mit', {
             layers: 'EESTIFOTO',
             continuousWorld: true,
             maxZoom: maxZoom
         }).addTo(map);
 
-        L.tileLayer.wms('https://xgis.maaamet.ee/xgis2/service/32g9/mit', {
+        /*L.tileLayer.wms('https://xgis.maaamet.ee/xgis2/service/32g9/mit', {
             layers: 'HYBRID',
             transparent: true,
             format: 'image/png',
             maxZoom: maxZoom
-        }).addTo(map);
+        }).addTo(map);*/
 
-        L.tileLayer.wms('https://xgis.maaamet.ee/xgis2/service/32g9/mit', {
+        /*L.tileLayer.wms('https://xgis.maaamet.ee/xgis2/service/32g9/mit', {
             layers: 'nDSM',
             transparent: true,
             format: 'image/png',
             maxZoom: maxZoom
-        }).addTo(map);
+        }).addTo(map);*/
 
         var editableLayers = new L.FeatureGroup();
         map.addLayer(editableLayers);
@@ -54,8 +63,14 @@
         var drawPluginOptions = {
             position: 'topleft',
             draw: {
-                shapeOptions: {
-                    color: "#97009c"
+                rectangle: {
+                    shapeOptions: {
+                        fill: false,
+                        clickable: false,
+                        stroke: true,
+                        color: '#267fca',
+                        opacity: 0.8
+                    },
                 },
                 polyline: false,
                 circle: false,
@@ -101,6 +116,7 @@
         });
 
         function getPositions(bbox) {
+            hideFigures();
             socket.send(JSON.stringify({type: 'get-positions', bbox}));
         }
 
@@ -132,7 +148,7 @@
 
         function handlePositions(positions) {
             const currentMarkers = markers.getLayers();
-            const newCoordinates = [];
+            const newPositions = [];
 
             if (Array.isArray(positions) && positions.length > 0) {
                 positions.forEach((position) => {
@@ -142,25 +158,27 @@
 
                     console.log('wgs84Coordinates', wgs84Coordinates);
 
-                    newCoordinates.push(new L.LatLng(wgs84Coordinates[1], wgs84Coordinates[0]));
-
-                    //const marker = L.marker([wgs84Coordinates[1], wgs84Coordinates[0]]);
-
-                    //marker.addTo(markers);
+                    newPositions.push({
+                        latLng: new L.LatLng(wgs84Coordinates[1], wgs84Coordinates[0]),
+                        type: position.type
+                    });
                 });
             }
 
             let i = 0;
 
-            while (i < currentMarkers.length && i < newCoordinates.length) {
+            while (i < currentMarkers.length && i < newPositions.length) {
                 console.log('update marker');
-                currentMarkers[i].setLatLng(newCoordinates[i]);
+                currentMarkers[i].setLatLng(newPositions[i].latLng);
+                currentMarkers[i].setIcon(getAntennaIcon(newPositions[i].type === 'mm-wave'));
                 i++;
             }
 
-            while (i < newCoordinates.length) {
+            while (i < newPositions.length) {
                 console.log('add marker');
-                const marker = new L.Marker(newCoordinates[i]);
+                const marker = new L.Marker(newPositions[i].latLng, {
+                    icon: getAntennaIcon(newPositions[i].type === 'mm-wave')
+                });
                 marker.addTo(markers);
                 i++;
             }
@@ -170,7 +188,98 @@
                 markers.removeLayer(currentMarkers[i]);
                 i++;
             }
+
+            showFigures();
         }
+
+        function hideFigures() {
+            document.getElementById('density').classList.remove('active');
+            document.getElementById('coverage').classList.remove('active');
+        }
+
+        function showFigures() {
+            document.getElementById('density').classList.add('active');
+            document.getElementById('coverage').classList.add('active');
+            document.getElementById('density').src = 'figures/density.png';
+            document.getElementById('coverage').src = 'figures/coverage.png';
+        }
+
+        function describeArc(x, y, radius, spread, startAngle, endAngle){
+            var outerStart = polarToCartesian(x, y, radius + spread, endAngle);
+            var outerEnd = polarToCartesian(x, y, radius + spread, startAngle);
+
+            var largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
+
+            var d = [
+                "M", outerStart.x, outerStart.y,
+                "A", radius + spread, radius + spread, 0, largeArcFlag, 0, outerEnd.x, outerEnd.y
+            ].join(" ");
+
+            return d;
+        }
+
+        function polarToCartesian(centerX, centerY, radius, angleInDegrees) {
+            var angleInRadians = (angleInDegrees-90) * Math.PI / 180.0;
+
+            return {
+                x: centerX + (radius * Math.cos(angleInRadians)),
+                y: centerY + (radius * Math.sin(angleInRadians))
+            };
+        }
+
+        function getArc(x, y, radius, spread, startAngle, endAngle, color, width) {
+            return `<path opacity="0.7" stroke-linecap="round" fill="none" stroke="${color}" stroke-width="${width}" d="${describeArc(x, y, radius, spread, startAngle, endAngle)}"/>`;
+        }
+
+        console.log(describeArc(50, 50, 20, 2, 45, 135));
+
+        var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        svg.setAttribute('width', '100');
+        svg.setAttribute('height', '100');
+        svg.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:xlink", "http://www.w3.org/1999/xlink");
+
+        svg.innerHTML = `
+            <circle fill="white" cx="50" cy="50" r="10"/>
+            <circle fill="black" cx="50" cy="50" r="8"/>
+            ${getArc(50, 50, 20, 5, 45, 135, 'black', 8)}
+            ${getArc(50, 50, 20, 5, 45, 135, '#267fca', 5)}
+            ${getArc(50, 50, 40, 5, 45, 135, 'black', 8)}
+            ${getArc(50, 50, 40, 5, 45, 135, '#267fca', 5)}
+            ${getArc(50, 50, 20, 5, 225, 315, 'white', 8)}
+            ${getArc(50, 50, 20, 5, 225, 315, '#267fca', 5)}
+            ${getArc(50, 50, 40, 5, 225, 315, 'white', 8)}
+            ${getArc(50, 50, 40, 5, 225, 315, '#267fca', 5)}
+        `;
+
+        function getAntennaIconSVG() {
+            const edgeColor = '#222';
+            //const color = '#267fca';
+            const color = 'white';
+
+            /*return `<svg width="100" height="100" xmlns:xlink="http://www.w3.org/1999/xlink">
+                <circle fill="${edgeColor}" cx="50" cy="50" r="10"/>
+                <circle fill="white" cx="50" cy="50" r="8"/>
+                ${getArc(50, 50, 20, 5, 45, 135, edgeColor, 8)}
+                ${getArc(50, 50, 20, 5, 45, 135, color, 5)}
+                ${getArc(50, 50, 40, 5, 45, 135, edgeColor, 8)}
+                ${getArc(50, 50, 40, 5, 45, 135, color, 5)}
+                ${getArc(50, 50, 20, 5, 225, 315, edgeColor, 8)}
+                ${getArc(50, 50, 20, 5, 225, 315, color, 5)}
+                ${getArc(50, 50, 40, 5, 225, 315, edgeColor, 8)}
+                ${getArc(50, 50, 40, 5, 225, 315, color, 5)}
+                </svg>`*/
+
+            return `<svg width="100" height="100" xmlns:xlink="http://www.w3.org/1999/xlink">
+                <circle fill="${edgeColor}" cx="50" cy="50" r="10"/>
+                <circle fill="white" cx="50" cy="50" r="8"/>
+                ${getArc(50, 50, 20, 5, 45, 135, color, 8)}
+                ${getArc(50, 50, 40, 5, 45, 135, color, 8)}
+                ${getArc(50, 50, 20, 5, 225, 315, color, 8)}
+                ${getArc(50, 50, 40, 5, 225, 315, color, 8)}
+                </svg>`
+        }
+
+        //document.body.appendChild(svg);
     </script>
 </div>
 <div class="underbar">
@@ -178,5 +287,7 @@
     <button class="filler-button">SELECT RADIO</button>
     <button class="filler-button">PLACEMENT MODE</button>
 </div>
+<img id="density" src=""/>
+<img id="coverage" src=""/>
 </body>
 </html>
