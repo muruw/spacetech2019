@@ -44,7 +44,12 @@ def save_coverage_plots(mast_ranges, p):
 
     plt.clf()
     covered = coverage > MIN_RECEIVED_INTENSITY
-    plt.imshow(covered)
+
+    if np.min(covered.flatten().astype(int)) == 1:
+        plt.imshow(covered, cmap="viridis_r")
+    else:
+        plt.imshow(covered, cmap="viridis")
+    
     plt.tick_params(axis="both", which="both", bottom=False, top=False,
         labelbottom=False, left=False, right=False, labelleft=False)
     plt.savefig(
