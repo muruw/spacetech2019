@@ -74,11 +74,11 @@ n_small_cell = density_map.get_suggested_mast_amount(
     density_map.area - covered_area
 )
 
-mast_ranges = [MM_WAVE_RANGE] * n_mm_wave + [SMALL_CELL_RANGE] * n_small_cell
-optimizer = MastPositionOptimizer(density_map, mast_ranges, mm_wave_p)
+if n_small_cell > 0:
+    mast_ranges = [MM_WAVE_RANGE] * n_mm_wave + [SMALL_CELL_RANGE] * n_small_cell
+    optimizer = MastPositionOptimizer(density_map, mast_ranges, mm_wave_p)
 
-for i in range(5):
-    pop, stats, hof = optimizer.run(10, 1)
-    mast_p = mm_wave_p + list(hof[0])
-    save_coverage_plots(mast_ranges, mast_p)
-
+    for i in range(5):
+        pop, stats, hof = optimizer.run(10, 1)
+        mast_p = mm_wave_p + list(hof[0])
+        save_coverage_plots(mast_ranges, mast_p)
