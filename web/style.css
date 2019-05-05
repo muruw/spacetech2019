@@ -185,10 +185,11 @@ html {
 
 .ceo_sentence {
   color: snow;
-  font-size: 15px;
+  font-size: 30px;
 }
 
 .ourSlogan {
+  padding-top: 10%;
   max-width: 55%;
   max-height: 55%;
 }
@@ -206,7 +207,7 @@ html {
 
   border: none;
   font-family: "Arial";
-  font-size: 15px;
+  font-size: 30px;
   text-decoration: none;
 }
 
@@ -224,7 +225,7 @@ html {
   font-weight: bold;
   font-family: "Raleway";
   display: inherit;
-  margin: 20px 0;
+  margin: 70px 0;
 }
 .body {
   width: 85px;
