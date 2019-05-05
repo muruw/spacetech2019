@@ -9,6 +9,12 @@ from simulation.optimizer import MastPositionOptimizer
 from simulation.density_map import DensityMap
 from simulation.parameters import *
 
+# Check if figures folder exists
+directory = 'web/figures'
+if not os.path.exists(directory):
+    os.makedirs(directory)
+
+
 # Plot high resolution density
 density_map = DensityMap(sys.argv[1], (128, 128))
 
