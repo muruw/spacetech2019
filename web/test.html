@@ -116,6 +116,7 @@
         });
 
         function getPositions(bbox) {
+            hideFigures();
             socket.send(JSON.stringify({type: 'get-positions', bbox}));
         }
 
@@ -187,6 +188,20 @@
                 markers.removeLayer(currentMarkers[i]);
                 i++;
             }
+
+            showFigures();
+        }
+
+        function hideFigures() {
+            document.getElementById('density').classList.remove('active');
+            document.getElementById('coverage').classList.remove('active');
+        }
+
+        function showFigures() {
+            document.getElementById('density').classList.add('active');
+            document.getElementById('coverage').classList.add('active');
+            document.getElementById('density').src = 'figures/density.png';
+            document.getElementById('coverage').src = 'figures/coverage.png';
         }
 
         function describeArc(x, y, radius, spread, startAngle, endAngle){
@@ -272,5 +287,7 @@
     <button class="filler-button">SELECT RADIO</button>
     <button class="filler-button">PLACEMENT MODE</button>
 </div>
+<img id="density" src=""/>
+<img id="coverage" src=""/>
 </body>
 </html>
