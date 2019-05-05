@@ -206,11 +206,12 @@
 
         function showFigures() {
             setTimeout(() => {
+                const antiCacheRandomValue = Date.now();
                 document.getElementById('figures').classList.add('active');
-                document.getElementById('density').src = 'figures/density.png';
-                document.getElementById('signal').src = 'figures/signal.png';
-                document.getElementById('coverage').src = 'figures/coverage.png';
-            }, 1000);
+                document.getElementById('density').src = 'figures/density.png?' + antiCacheRandomValue;
+                document.getElementById('signal').src = 'figures/signal.png?' + antiCacheRandomValue;
+                document.getElementById('coverage').src = 'figures/coverage.png?' + antiCacheRandomValue;
+            }, 2000);
         }
 
         function describeArc(x, y, radius, spread, startAngle, endAngle){
