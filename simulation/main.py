@@ -81,10 +81,13 @@ for i in range(2):
     save_coverage_plots(mast_ranges, mm_wave_p)
 
 # Place small masts
-dense = density_map.density > 0.3
-maxima = maximum_filter(density_map.density, size=4) == density_map.density
+dense = density_map.density > 0.4
+maxima = maximum_filter(density_map.density, size=8) == density_map.density
 
-n_small_cell = (maxima * dense).sum()
+if n_mm_wave == 1:
+    n_small_cell = 0
+else:
+    n_small_cell = (maxima * dense).sum()
 mast_ranges = [MM_WAVE_RANGE] * n_mm_wave + [SMALL_CELL_RANGE] * n_small_cell
 
 x, y = np.where((dense * maxima) == True)
