@@ -55,28 +55,49 @@ body {
     transform: scale(0.5);
 }
 
-#density {
+#figures {
     position: absolute;
-    top: 20px;
-    right: 20px;
+    right: 0;
+    top: 0;
+    display: none;
     z-index: 999;
-    height: 128px;
+}
+
+#figures.active {
+    display: flex;
+    flex-direction: column;
+}
+
+#density {
+
+}
+
+#signal {
+    /*transform: rotate(-90deg);*/
 }
 
 #coverage {
-    position: absolute;
-    top: 168px;
-    right: 20px;
-    z-index: 999;
-    height: 128px;
+
 }
 
 #density,
+#signal,
 #coverage {
-    display: none;
+    height: 25vh;
+    max-height: 200px;
+    padding: 10px 10px 0 0;
 }
 
-#density.active,
-#coverage.active {
-    display: block;
+.processing {
+    animation: pulse 1s infinite ease-in-out;
+}
+
+path.processing-done {
+    stroke: green;
+}
+
+@keyframes pulse {
+    0% { opacity: 0.5; }
+    50% { opacity: 1; }
+    100% { opacity: 0.5; }
 }
