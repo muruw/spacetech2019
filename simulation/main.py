@@ -1,27 +1,23 @@
 import sys
 import os
 import numpy as np
+import matplotlib.pyplot as plt
 
 sys.path.append(os.getcwd())
 
 from simulation.optimizer import MastPositionOptimizer
-from simulation.wms import get_density_map
+from simulation.density_map import DensityMap
 
-bbox = sys.argv[1]
-density_map = get_density_map(bbox)
+# Plot high resolution density
+density_map = DensityMap(sys.argv[1], (128, 128))
 
-bbox = [float(coord) for coord in bbox.split(",")]
-width = bbox[2] - bbox[0]
-height = bbox[3] - bbox[1]
-size = (width + height) / 2000
+plt.imshow(density_map.density)
+plt.savefig("web/figures/density.png", bbox_inches="tight", transparent=True)
 
-mm_wave_masts = max(1, min(5, round(size**2 / np.pi)))
-small_cell_masts = min(20, round(size**2 * (1 - 1 / np.pi / 2)))
+# Calculate lower resolution density and optimize mast positions
+density_map = DensityMap(sys.argv[1])
+mast_ranges = density_map.get_suggested_mast_ranges()
 
-optimizer = MastPositionOptimizer(
-    density_map,
-    [1/size] * mm_wave_masts + [0.1/size] * small_cell_masts
-)
+optimizer = MastPositionOptimizer(density_map, mast_ranges)
 
-optimizer.run(1, 1)
-optimizer.run(2, 9)
+optimizer.run(2, 10)
