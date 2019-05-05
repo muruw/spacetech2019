@@ -68,8 +68,9 @@
                         fill: false,
                         clickable: false,
                         stroke: true,
-                        color: '#267fca',
-                        opacity: 0.8
+                        //color: '#267fca',
+                        color: 'rgb(3, 62, 255)',
+                        opacity: 0.6
                     },
                 },
                 polyline: false,
@@ -96,8 +97,13 @@
 
             markers.clearLayers();
 
+            //Needs to be before adding layer
+            layer.setStyle({className: 'processing'});
+
             editableLayers.clearLayers();
             editableLayers.addLayer(layer);
+
+            layer.setStyle({className: 'processing'});
 
             const layerBounds = e.layer.getBounds();
             const southWest = layerBounds.getSouthWest();
@@ -139,7 +145,9 @@
                 if (result.type === 'positions') {
                     handlePositions(result.positions);
                 } else if (result.type === 'positions-done') {
-
+                    const processingElements = document.querySelector('.processing');
+                    processingElements.classList.remove('processing');
+                    processingElements.classList.add('processing-done');
                 }
             } catch (e) {
                 console.error(e);
@@ -193,15 +201,16 @@
         }
 
         function hideFigures() {
-            document.getElementById('density').classList.remove('active');
-            document.getElementById('coverage').classList.remove('active');
+            document.getElementById('figures').classList.remove('active');
         }
 
         function showFigures() {
-            document.getElementById('density').classList.add('active');
-            document.getElementById('coverage').classList.add('active');
-            document.getElementById('density').src = 'figures/density.png';
-            document.getElementById('coverage').src = 'figures/coverage.png';
+            setTimeout(() => {
+                document.getElementById('figures').classList.add('active');
+                document.getElementById('density').src = 'figures/density.png';
+                document.getElementById('signal').src = 'figures/signal.png';
+                document.getElementById('coverage').src = 'figures/coverage.png';
+            }, 1000);
         }
 
         function describeArc(x, y, radius, spread, startAngle, endAngle){
@@ -228,7 +237,7 @@
         }
 
         function getArc(x, y, radius, spread, startAngle, endAngle, color, width) {
-            return `<path opacity="0.7" stroke-linecap="round" fill="none" stroke="${color}" stroke-width="${width}" d="${describeArc(x, y, radius, spread, startAngle, endAngle)}"/>`;
+            return `<path opacity="0.6" stroke-linecap="round" fill="none" stroke="${color}" stroke-width="${width}" d="${describeArc(x, y, radius, spread, startAngle, endAngle)}"/>`;
         }
 
         console.log(describeArc(50, 50, 20, 2, 45, 135));
@@ -254,7 +263,8 @@
         function getAntennaIconSVG() {
             const edgeColor = '#222';
             //const color = '#267fca';
-            const color = 'white';
+            //const color = 'white';
+            const color = 'rgb(3, 62, 255)';
 
             /*return `<svg width="100" height="100" xmlns:xlink="http://www.w3.org/1999/xlink">
                 <circle fill="${edgeColor}" cx="50" cy="50" r="10"/>
@@ -271,7 +281,7 @@
 
             return `<svg width="100" height="100" xmlns:xlink="http://www.w3.org/1999/xlink">
                 <circle fill="${edgeColor}" cx="50" cy="50" r="10"/>
-                <circle fill="white" cx="50" cy="50" r="8"/>
+                <circle fill="${color}" cx="50" cy="50" r="8"/>
                 ${getArc(50, 50, 20, 5, 45, 135, color, 8)}
                 ${getArc(50, 50, 40, 5, 45, 135, color, 8)}
                 ${getArc(50, 50, 20, 5, 225, 315, color, 8)}
@@ -287,7 +297,10 @@
     <button class="filler-button">SELECT RADIO</button>
     <button class="filler-button">PLACEMENT MODE</button>
 </div>
-<img id="density" src=""/>
-<img id="coverage" src=""/>
+<div id="figures">
+    <img id="density" src=""/>
+    <img id="signal" src=""/>
+    <img id="coverage" src=""/>
+</div>
 </body>
 </html>

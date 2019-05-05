@@ -158,8 +158,11 @@ function processorToWorldObject(normalizedObject, worldAreaBounds) {
 
     console.log(x, y, x1, y1, x2, y2);
 
-    worldObject.x = x1 + x * (x2 - x1);
-    worldObject.y = y1 + y * (y2 - y1);
+    /*worldObject.x = x1 + x * (x2 - x1);
+    worldObject.y = y1 + y * (y2 - y1);*/
+
+    worldObject.x = x1 + y * (x2 - x1);
+    worldObject.y = y1 + (1 - x) * (y2 - y1);
 
     return worldObject;
 }
