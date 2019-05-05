@@ -44,3 +44,11 @@ body {
     color: rgb(22, 21, 21);
     border: none;
 }
+
+.antenna-icon-big svg {
+    transform: scale(0.8);
+}
+
+.antenna-icon-small svg {
+    transform: scale(0.5);
+}
