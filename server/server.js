@@ -3,8 +3,11 @@ const express = require('express');
 const {spawn, exec} = require('child_process');
 const WebSocket = require('ws');
 const readline = require('readline');
+const crypto = require("crypto");
 
 const port = 8088;
+
+let subProcesses = {};
 
 const app = express();
 
@@ -14,6 +17,10 @@ const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 
 wss.on('connection', (ws) => {
+    ws.uuid = crypto.randomBytes(16).toString("hex");
+
+    console.log('socket connected', ws.uuid);
+
     ws.on('message', (message) => {
         console.log('received: %s', message);
 
@@ -23,17 +30,24 @@ wss.on('connection', (ws) => {
             console.log('request', request);
 
             if (request.type === 'get-positions') {
-                getPositionsWithUpdates(request.bbox, request.existing, (positions) => {
+                getPositionsWithUpdates(ws.uuid, request.bbox, request.existing, (positions) => {
                     console.log('onUpdate', positions);
                     ws.send(JSON.stringify({type: 'positions', positions}));
                 }, () => {
                     console.log('onDone');
                     ws.send(JSON.stringify({type: 'positions-done'}));
                 });
+            } else if (request.type === 'stop') {
+                killSubProcess(ws.uuid);
             }
         } catch (e) {
             console.error(e);
         }
+    });
+
+    ws.on('close', (code, reason) => {
+        console.log('socket closed', code, reason);
+        killSubProcess(ws.uuid);
     });
 });
 
@@ -78,7 +92,16 @@ app.get('/get-positions', (req, res) => {
     })
 });
 
-function getPositionsWithUpdates(bbox, existingAntennas, onUpdate, onDone) {
+function killSubProcess(uuid) {
+    if (subProcesses[uuid]) {
+        console.log('killSubProcess', uuid);
+        subProcesses[uuid].kill();
+    }
+
+    delete subProcesses[uuid];
+}
+
+function getPositionsWithUpdates(uuid, bbox, existingAntennas, onUpdate, onDone) {
     console.log('getPositionsWithUpdates', bbox, existingAntennas);
 
     let arguments = ['-u', 'simulation/main.py', bbox];
@@ -87,9 +110,13 @@ function getPositionsWithUpdates(bbox, existingAntennas, onUpdate, onDone) {
         arguments.push(existingAntennas);
     }
 
+    killSubProcess(uuid);
+
     const subProcess = spawn('python', arguments, {
         cwd: '..'
     });
+
+    subProcesses[uuid] = subProcess;
 
     const rl = readline.createInterface({
         input: subProcess.stdout
