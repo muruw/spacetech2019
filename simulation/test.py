@@ -30,7 +30,7 @@ density_map.plot_coverage(mast_ranges, mm_wave_p)
 
 #%%
 covered = density_map.get_coverage(mast_ranges, mm_wave_p) > MIN_RECEIVED_INTENSITY
-sparse = density_map.density < MIN_RECEIVED_INTENSITY
+sparse = density_map.density < DENSE_AREA_DENSITY
 
 plt.imshow(sparse)
 
