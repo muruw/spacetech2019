@@ -14,10 +14,11 @@ creator.create("Individual", np.ndarray, fitness=creator.FitnessMax)
 
 
 class MastPositionOptimizer:
-    def __init__(self, density_map, mast_ranges, fixed_p=[]):
+    def __init__(self, density_map, mast_ranges, fixed_p=[], weigh_density=False):
         self.density_map = density_map
         self.mast_ranges = mast_ranges
         self.fixed_p = fixed_p
+        self.weigh_density = weigh_density
 
         self.toolbox = base.Toolbox()
 
@@ -50,7 +51,10 @@ class MastPositionOptimizer:
                     )
 
                     if P_r > MIN_RECEIVED_INTENSITY:
-                        coverage += 1 + self.density_map.get_density((x, y))
+                        if self.weigh_density:
+                            coverage += np.exp(self.density_map.get_density((x, y)))
+                        else:
+                            coverage += 1
                         break
 
         return coverage,

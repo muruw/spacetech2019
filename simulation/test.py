@@ -8,10 +8,11 @@ from simulation.density_map import DensityMap
 from simulation.parameters import *
 
 #%%
-bbox_forest = "653840.2028413543,6475325.432370271,655077.7935806693,6476604.332011141"
-bbox_field = "652063.0487542147,6475264.017033348,652984.7924631344,6475956.906271896"
-bbox_town = "658000,6473000,660000,6475000"
+bbox_field = "646827.3241459839,6470128.575091781,649289.8014071655,6472195.109801418"
+bbox_town = "657116.4504978292,6472443.678982472,659362.2726506529,6474686.203315113"
+bbox_hybrid = "655370.9544882914,6472575.328962082,657795.7594628605,6474688.885350946"
 
+#%%
 density_map = DensityMap(bbox_town)
 plt.imshow(density_map.original, aspect=density_map.size[1]/density_map.size[0])
 
@@ -28,24 +29,34 @@ mm_wave_p = list(hof[0])
 density_map.plot_coverage(mast_ranges, mm_wave_p)
 
 #%%
-covered_area = density_map.get_coverage_area(mast_ranges, mm_wave_p)
+covered = density_map.get_coverage(mast_ranges, mm_wave_p) > MIN_RECEIVED_INTENSITY
+sparse = density_map.density < DENSE_AREA_DENSITY
+
+plt.imshow(sparse)
+
+#%%
+#covered_area = density_map.get_coverage_area(mast_ranges, mm_wave_p)
+covered_area = np.logical_or(covered, sparse).sum()
+covered_area /= density_map.density.shape[0] * density_map.density.shape[1]
+covered_area *= density_map.area
 
 n_small_cell = density_map.get_suggested_mast_amount(
     SMALL_CELL_RANGE,
     density_map.area - covered_area
 )
 
-n_small_cell
+density_map.area, covered_area, n_small_cell
 
 #%%
 mast_ranges = [MM_WAVE_RANGE] * n_mm_wave + [SMALL_CELL_RANGE] * n_small_cell
-optimizer = MastPositionOptimizer(density_map, mast_ranges, mm_wave_p)
+optimizer = MastPositionOptimizer(density_map, mast_ranges, mm_wave_p, True)
 pop, stats, hof = optimizer.run(25, 5, True)
 mast_p = mm_wave_p + list(hof[0])
 
 density_map.plot_coverage(mast_ranges, mast_p)
 
 #%%
+'''
 plt.imshow(density_map.original, alpha=0.8)
 
 coords = np.array(list(hof[0])) * 1024
@@ -65,7 +76,6 @@ plt.scatter(
     c="red",
     marker="x"
 )
+'''
 
-#%%
-1 + np.mean(density_map.density) * 5
-
+pass
